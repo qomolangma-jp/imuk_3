@@ -274,20 +274,28 @@
       // Hide loading
       loading.style.display = 'none';
 
-      // Map data to new keys and sort
-      const data = rawData.map(p => ({
-        lastName: p['氏名（姓）'],
-        firstName: p['氏名（名）'],
-        lastNameKana: p['ふりがな（姓）'],
-        firstNameKana: p['ふりがな（名）'],
-        affiliation: p['所属'],
-        workSummary: p['今のお仕事や活動を一言でおしえてください'],
-        komatsuImpression: p['小松市に対するイメージをひとことで']
-      })).sort((a, b) => {
-        const nameA = `${a.lastNameKana} ${a.firstNameKana}`;
-        const nameB = `${b.lastNameKana} ${b.firstNameKana}`;
-        return nameA.localeCompare(nameB, 'ja');
-      });
+      // Debug: Log the first item to see available fields
+      console.log('Available fields in data:', rawData[0] ? Object.keys(rawData[0]) : 'No data');
+      console.log('Sample data:', rawData[0]);
+
+      // Map data to new keys, filter by 予定=OK, and sort
+      const data = rawData
+        .filter(p => p['予定'] === 'OK')  // Filter only items where 予定 is 'OK'
+        .map(p => ({
+          lastName: p['氏名（姓）'],
+          firstName: p['氏名（名）'],
+          lastNameKana: p['ふりがな（姓）'],
+          firstNameKana: p['ふりがな（名）'],
+          affiliation: p['所属'],
+          workSummary: p['今のお仕事や活動を一言でおしえてください'],
+          komatsuImpression: p['小松市に対するイメージをひとことで'],
+          schedule: p['予定']  // Keep schedule field for reference
+        }))
+        .sort((a, b) => {
+          const nameA = `${a.lastNameKana} ${a.firstNameKana}`;
+          const nameB = `${b.lastNameKana} ${b.firstNameKana}`;
+          return nameA.localeCompare(nameB, 'ja');
+        });
       
       data.forEach((person, index) => {
         const section = document.createElement("div");
